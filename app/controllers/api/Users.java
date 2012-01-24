@@ -10,7 +10,7 @@ public class Users extends Controller {
 
 	static public void createGuest() {
 		User user = new User();
-		user.username = "Player" + (int) (Math.random() * 5);
+		user.username = "Player" + (int) (Math.random() * 1000);
 		user.guest = true;
 		user.passwordHash = "password";
 		user.authToken = "authToken";

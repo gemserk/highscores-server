@@ -10,10 +10,11 @@ import play.db.jpa.Model;
 @Entity
 public class Score extends Model{
 	
-	public Leaderboard leaderboard;
-	@ManyToOne public User user;
+	@ManyToOne(optional=false) public Leaderboard leaderboard;
+	@ManyToOne(optional=false) public User user;
 	public long score;
 	public String data;
+	
 	
 	
 }
