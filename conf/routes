@@ -10,6 +10,9 @@ GET     /                                       Application.index
 GET		/users/createGuest				api.Users.createGuest
 GET		/leaderboards/score				api.Leaderboards.score
 
+GET		/test/init						test.Test.init
+GET		/test/delete						test.Test.delete
+
 # Ignore favicon requests
 GET     /favicon.ico                            404
 
