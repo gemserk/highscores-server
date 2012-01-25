@@ -1,5 +1,7 @@
 package controllers.api;
 
+import org.joda.time.DateTime;
+
 import models.Game;
 import models.Leaderboard;
 import models.Score;
@@ -23,10 +25,26 @@ public class Leaderboards extends Controller {
 		
 		
 		Long scoreValue = params.get("score",Long.class);
+		
+		
+		DateTime dateTime = new DateTime();
+		
+		int year = dateTime.getYear();
+		int month = dateTime.getMonthOfYear();
+		int week = dateTime.getWeekOfWeekyear();
+		int day = dateTime.getDayOfYear();
+		
+		
 		Score score = new Score();
 		score.leaderboard = leaderboard;
 		score.score = scoreValue;
 		score.user = user;
+		
+		score.year = year;
+		score.month = month;
+		score.week = week;
+		score.day = day;
+		
 		score.save();		
 		renderText("Score submitted succesfully");
 	}
