@@ -15,5 +15,5 @@ public class User extends Model {
 
 	public boolean guest;
 
-	public String authToken;
+	public String privatekey;
 }

@@ -16,4 +16,4 @@ User(user):
    username: user
    passwordHash: aslfdjaslfjs
    guest: false
-   authToken: authToken
+   privatekey: privatekey

@@ -54,7 +54,7 @@ public class ApplicationTest extends FunctionalTest {
 		String url = new URLBuilder("/leaderboards/score")//
 				.addQueryParameter("leaderboard", "leaderboard")//
 				.addQueryParameter("apiKey", "apikey")//
-				.addQueryParameter("authToken", "authToken")//
+				.addQueryParameter("privatekey", user.privatekey)//
 				.addQueryParameter("user", Long.toString(user.id))//
 				.addQueryParameter("score", Long.toString(scoreValue))//
 				.build();
@@ -84,7 +84,7 @@ public class ApplicationTest extends FunctionalTest {
 		String url = new URLBuilder("/leaderboards/score")//
 				.addQueryParameter("leaderboard", "leaderboard")//
 				.addQueryParameter("apiKey", "apikey")//
-				.addQueryParameter("authToken", "authToken")//
+				.addQueryParameter("privatekey",  user.privatekey)//
 				.addQueryParameter("user", Long.toString(user.id))//
 				.addQueryParameter("score", Long.toString(scoreValue))//
 				.build();
@@ -106,7 +106,7 @@ public class ApplicationTest extends FunctionalTest {
 		url = new URLBuilder("/leaderboards/score")//
 				.addQueryParameter("leaderboard", "leaderboard")//
 				.addQueryParameter("apiKey", "apikey")//
-				.addQueryParameter("authToken", "authToken")//
+				.addQueryParameter("privatekey",  user.privatekey)//
 				.addQueryParameter("user", Long.toString(user.id))//
 				.addQueryParameter("score", Long.toString(scoreValue2))//
 				.build();
@@ -137,7 +137,7 @@ public class ApplicationTest extends FunctionalTest {
 		String url = new URLBuilder("/leaderboards/score")//
 				.addQueryParameter("leaderboard", "leaderboard")//
 				.addQueryParameter("apiKey", "apikey")//
-				.addQueryParameter("authToken", "authToken")//
+				.addQueryParameter("privatekey",  user.privatekey)//
 				.addQueryParameter("user", Long.toString(user.id))//
 				.addQueryParameter("score", Long.toString(scoreValue))//
 				.build();
@@ -158,7 +158,7 @@ public class ApplicationTest extends FunctionalTest {
 		url = new URLBuilder("/leaderboards/score")//
 				.addQueryParameter("leaderboard", "leaderboard")//
 				.addQueryParameter("apiKey", "apikey")//
-				.addQueryParameter("authToken", "authToken")//
+				.addQueryParameter("privatekey",  user.privatekey)//
 				.addQueryParameter("user", Long.toString(user.id))//
 				.addQueryParameter("score", Long.toString(scoreValue2))//
 				.build();

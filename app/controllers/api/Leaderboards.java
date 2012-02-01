@@ -31,7 +31,7 @@ public class Leaderboards extends Controller {
 			error("Leaderboard ("+ leaderboardName +") doesn't match game (" + game.name + ")");
 		
 		User user = User.findById(params.get("user",Long.class));
-		if(!user.authToken.equals(params.get("authToken")))
+		if(!user.privatekey.equals(params.get("privatekey")))
 			error("User authentication failed");
 		
 		

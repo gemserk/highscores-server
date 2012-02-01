@@ -15,10 +15,10 @@ public class Users extends Controller {
 		user.username = "Player" + (int) (Math.random() * 1000);
 		user.guest = true;
 		user.passwordHash = "password";
-		user.authToken = "authToken";
+		user.privatekey = "privatekey";
 		user.save();
 		
-		UserDTO userDTO = new UserDTO(user.username, user.authToken);
+		UserDTO userDTO = new UserDTO(user.username, user.privatekey);
 		renderJSON(userDTO);
 	}
 	
