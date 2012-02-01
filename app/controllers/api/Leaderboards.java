@@ -15,16 +15,20 @@ import play.mvc.Controller;
 public class Leaderboards extends Controller {
 
 	static public void score(){
-		Long leaderboardId = params.get("leaderboardId", Long.class);
+//		Long leaderboardId = params.get("leaderboardId", Long.class);
 		String apiKey = params.get("apiKey");
 		Game game = Game.find("byApiKey", apiKey).first();
 		if(game==null)
 			error("No game matching apikey was found");
 		
-		Leaderboard leaderboard = Leaderboard.findById(leaderboardId);
+		String leaderboardName = params.get("leaderboard");
+		if(leaderboardName==null)
+			error("You need to provide the leaderboard name");
 		
-		if(!leaderboard.game.equals(game))
-			error("Leaderboard ("+leaderboard.name+") doesn't match game (" + game.name + ")");
+		Leaderboard leaderboard = Leaderboard.find("byGameAndName",game, leaderboardName).first();
+		
+		if(leaderboard==null)
+			error("Leaderboard ("+ leaderboardName +") doesn't match game (" + game.name + ")");
 		
 		User user = User.findById(params.get("user",Long.class));
 		if(!user.authToken.equals(params.get("authToken")))
@@ -58,53 +62,50 @@ public class Leaderboards extends Controller {
 		Score[] scores = scoresList.toArray(new Score[scoresList.size()]);
 		int candidateScope = 1;
 		
+		int replacedScores = -1;
+		boolean todayScoreExists = false; 
+		
 		for (int i = 0; i < scores.length; i++) {
 			Score oldScore = scores[i];
-			if(oldScore.scope==1){
+			todayScoreExists = todayScoreExists || oldScore.day == day;
+			if(matchesInScope(oldScore, oldScore)){
 				if(score.score > oldScore.score){
-					score.scope = 1;
-					deleteOldScores(scores, i);
+					score.scope = oldScore.scope;
+					replacedScores = i;
+					break;
 				} else {
 					candidateScope++;
-				}				
-			} else if (oldScore.scope==2){
-				if(!(score.year == oldScore.year && score.month == oldScore.month))
-					continue;
-				
-				if(score.score > oldScore.score){
-					score.scope = 2;
-					deleteOldScores(scores, i);
-				} else {
-					candidateScope++;
-				}
-			} else if (oldScore.scope == 3){
-				if(!(score.year == oldScore.year && score.month == oldScore.month && score.week == oldScore.week))
-					continue;
-				
-				if(score.score > oldScore.score){
-					score.scope = 3;
-					deleteOldScores(scores, i);
-				} else {
-					candidateScope++;
-				}
-			} else if(oldScore.scope == 4){
-				if(!(score.year == oldScore.year && score.month == oldScore.month && score.week == oldScore.week && score.day == oldScore.day))
-					continue;
-				
-				if(score.score > oldScore.score){
-					score.scope = 4;
-					deleteOldScores(scores, i);
-				} else {
-					candidateScope++;
-				}
+				}	
 			}
 		}
 		
-		if(candidateScope<5){
+		if(replacedScores!=-1)
+			deleteOldScores(scores, replacedScores);
+		
+		
+		
+		
+		if(replacedScores!=-1 || todayScoreExists == false){
 			score.scope = candidateScope;
 			score.save();	
 		}
 		renderText("Score submitted succesfully");
+	}
+	
+	private static boolean matchesInScope(Score oldScore, Score score) {
+		switch (oldScore.scope) {
+		case 1:
+			return true;
+		case 2:
+			return (score.year == oldScore.year && score.month == oldScore.month);
+		case 3:
+			return (score.year == oldScore.year && score.month == oldScore.month && score.week == oldScore.week);
+		case 4:
+			return (score.year == oldScore.year && score.month == oldScore.month && score.week == oldScore.week && score.day == oldScore.day);
+		default:
+			return false;
+		}
+
 	}
 		
 	static private void deleteOldScores(Score[] scores, int from){

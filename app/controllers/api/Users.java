@@ -3,6 +3,8 @@ package controllers.api;
 import java.util.HashMap;
 import java.util.Map;
 
+import datatransfer.UserDTO;
+
 import models.User;
 import play.mvc.Controller;
 
@@ -15,10 +17,9 @@ public class Users extends Controller {
 		user.passwordHash = "password";
 		user.authToken = "authToken";
 		user.save();
-		Map<String, Object> jsonUser = new HashMap<String, Object>();
-		jsonUser.put("username", user.username);
-		jsonUser.put("authToken", user.authToken);
-		renderJSON(jsonUser);
+		
+		UserDTO userDTO = new UserDTO(user.username, user.authToken);
+		renderJSON(userDTO);
 	}
 	
 }
