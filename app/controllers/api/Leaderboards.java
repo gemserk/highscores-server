@@ -1,5 +1,6 @@
 package controllers.api;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -18,93 +19,90 @@ import utils.Range;
 
 public class Leaderboards extends Controller {
 
-	static public void score(){
-//		Long leaderboardId = params.get("leaderboardId", Long.class);
+	private static final String scoresByAllTime = "select s from Score s where s.leaderboard = ? and s.scope <= ? order by s.score desc";
+	private static final String scoresByDay = "select s from Score s where s.leaderboard = ? and s.scope <= ? and s.day = ? order by s.score desc";
+	private static final String scoresByWeek = "select s from Score s where s.leaderboard = ? and s.scope <= ? and s.week = ? order by s.score desc";
+	private static final String scoresByMonth = "select s from Score s where s.leaderboard = ? and s.scope <= ? and s.month = ? order by s.score desc";
+
+	static public void score() {
+		// Long leaderboardId = params.get("leaderboardId", Long.class);
 		String apiKey = params.get("apiKey");
 		Game game = Game.find("byApiKey", apiKey).first();
-		if(game==null)
+		if (game == null)
 			error("No game matching apikey was found");
-		
+
 		String leaderboardName = params.get("leaderboard");
-		if(leaderboardName==null)
+		if (leaderboardName == null)
 			error("You need to provide the leaderboard name");
-		
-		Leaderboard leaderboard = Leaderboard.find("byGameAndName",game, leaderboardName).first();
-		
-		if(leaderboard==null)
-			error("Leaderboard ("+ leaderboardName +") doesn't match game (" + game.name + ")");
-		
+
+		Leaderboard leaderboard = Leaderboard.find("byGameAndName", game, leaderboardName).first();
+
+		if (leaderboard == null)
+			error("Leaderboard (" + leaderboardName + ") doesn't match game (" + game.name + ")");
+
 		String username = params.get("user");
-		if(username==null)
+		if (username == null)
 			error("You need to provide the username");
-		
-		User user = User.find("byUsername",username).first();
-		if(!user.privatekey.equals(params.get("privatekey")))
+
+		User user = User.find("byUsername", username).first();
+		if (!user.privatekey.equals(params.get("privatekey")))
 			error("User authentication failed");
-		
-		
-		Long scoreValue = params.get("score",Long.class);
-		
-		
+
+		Long scoreValue = params.get("score", Long.class);
+
 		DateTime dateTime = new DateTime();
 		String overridendayofyear = params.get("dayofyear");
-		if(Play.runingInTestMode() && overridendayofyear!= null) {
+		if (Play.runingInTestMode() && overridendayofyear != null) {
 			System.out.println("Overriding Date to " + overridendayofyear);
 			dateTime = dateTime.dayOfYear().setCopy(Integer.parseInt(overridendayofyear));
 		}
-		
+
 		int year = dateTime.getYear();
 		int month = dateTime.getMonthOfYear();
 		int week = dateTime.getWeekOfWeekyear();
 		int day = dateTime.getDayOfYear();
-		
-		
+
 		Score score = new Score();
 		score.leaderboard = leaderboard;
 		score.score = scoreValue;
 		score.user = user;
-		
+
 		score.year = year;
 		score.month = month;
 		score.week = week;
 		score.day = day;
-		
-		
-		
-		List<Score> scoresList = Score.find("user = ? order by scope",user).fetch();
+
+		List<Score> scoresList = Score.find("user = ? order by scope", user).fetch();
 		Score[] scores = scoresList.toArray(new Score[scoresList.size()]);
 		int candidateScope = 1;
-		
+
 		int replacedScores = -1;
-		boolean todayScoreExists = false; 
-		
+		boolean todayScoreExists = false;
+
 		for (int i = 0; i < scores.length; i++) {
 			Score oldScore = scores[i];
 			todayScoreExists = todayScoreExists || oldScore.day == day;
-			if(matchesInScope(oldScore, oldScore)){
-				if(score.score > oldScore.score){
+			if (matchesInScope(oldScore, oldScore)) {
+				if (score.score > oldScore.score) {
 					score.scope = oldScore.scope;
 					replacedScores = i;
 					break;
 				} else {
 					candidateScope++;
-				}	
+				}
 			}
 		}
-		
-		if(replacedScores!=-1)
+
+		if (replacedScores != -1)
 			deleteOldScores(scores, replacedScores);
-		
-		
-		
-		
-		if(replacedScores!=-1 || todayScoreExists == false){
+
+		if (replacedScores != -1 || todayScoreExists == false) {
 			score.scope = candidateScope;
-			score.save();	
+			score.save();
 		}
 		renderText("Score submitted succesfully");
 	}
-	
+
 	private static boolean matchesInScope(Score oldScore, Score score) {
 		switch (oldScore.scope) {
 		case 1:
@@ -120,42 +118,68 @@ public class Leaderboards extends Controller {
 		}
 
 	}
-		
-	static private void deleteOldScores(Score[] scores, int from){
+
+	static private void deleteOldScores(Score[] scores, int from) {
 		for (int i = from; i < scores.length; i++) {
 			scores[i].delete();
 		}
 	}
-	
-	public static void scores(){
+
+	public static void scores() {
 		String apiKey = params.get("apiKey");
 		Game game = Game.find("byApiKey", apiKey).first();
-		if(game==null)
+		if (game == null)
 			error("No game matching apikey was found");
-		
+
 		String leaderboardName = params.get("leaderboard");
-		if(leaderboardName==null)
+		if (leaderboardName == null)
 			error("You need to provide the leaderboard name");
-		
-		Leaderboard leaderboard = Leaderboard.find("byGameAndName",game, leaderboardName).first();
-		
-		if(leaderboard==null)
-			error("Leaderboard ("+ leaderboardName +") doesn't match game (" + game.name + ")");
-		
+
+		Leaderboard leaderboard = Leaderboard.find("byGameAndName", game, leaderboardName).first();
+
+		if (leaderboard == null)
+			error("Leaderboard (" + leaderboardName + ") doesn't match game (" + game.name + ")");
+
 		String rangeKey = params.get("range");
-			
+
 		Range range = Range.getByKey(rangeKey);
-		if(range==null)
+		if (range == null)
 			range = Range.All;
-		
+
 		int scope = range.scope;
-		
-		List<Score> scores = Leaderboard.find("select s from Score s where s.leaderboard = ? and s.scope <= ? order by s.score desc", leaderboard, scope).fetch();
-		
+
+		DateTime dateTime = new DateTime();
+		String overridendayofyear = params.get("dayofyear");
+		if (Play.runingInTestMode() && overridendayofyear != null) {
+			System.out.println("Overriding Date to " + overridendayofyear);
+			dateTime = dateTime.dayOfYear().setCopy(Integer.parseInt(overridendayofyear));
+		}
+
+		int year = dateTime.getYear();
+		int month = dateTime.getMonthOfYear();
+		int week = dateTime.getWeekOfWeekyear();
+		int day = dateTime.getDayOfYear();
+
+		List<Score> scores = new ArrayList<Score>();
+		switch (range) {
+		case All:
+			scores = Leaderboard.find(scoresByAllTime, leaderboard, scope).fetch();
+			break;
+		case Month:
+			scores = Leaderboard.find(scoresByMonth, leaderboard, scope, month).fetch();
+			break;
+		case Week:
+			scores = Leaderboard.find(scoresByWeek, leaderboard, scope, week).fetch();
+			break;
+		case Day:
+			scores = Leaderboard.find(scoresByDay, leaderboard, scope, day).fetch();
+			break;
+		}
+
 		List<ScoreDTO> scoreDTOs = ScoreDTO.convert(scores);
 		renderJSON(scoreDTOs);
-		
+
 	}
-	
-	
+
+
 }

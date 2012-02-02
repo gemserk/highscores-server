@@ -14,6 +14,7 @@ GET		/leaderboards/scores			api.Leaderboards.scores
 
 GET		/test/init						test.Test.init
 GET		/test/delete						test.Test.delete
+GET		/test/reset						test.Test.reset
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

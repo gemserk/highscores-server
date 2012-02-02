@@ -15,4 +15,10 @@ public class Test extends Controller {
 		renderText("DeleteLoad Successful");
 	}
 	
+	static public void reset(){
+		Fixtures.deleteDatabase();
+		Fixtures.loadModels("test/testdata.yaml");
+		renderText("ResetData Successful");
+	}
+	
 }
