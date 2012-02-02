@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Submit Score</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/main.css'}">
+        <link rel="shortcut icon" type="image/png" href="@{'/public/images/favicon.png'}">
+        <script src="@{'/public/javascripts/jquery-1.6.4.min.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+         <script src="@{'/public/javascripts/jquery.form.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+        <script type="text/javascript">
+        	function refreshForm(){
+        		var apikey = $("#gameleaderboard option:selected").attr("apikey");
+        		$("#apiKey").val(apikey);
+        		var leaderboard = $("#gameleaderboard option:selected").attr("leaderboard");
+        		$("#leaderboard").val(leaderboard);
+        		
+        		var username = $("#users option:selected").attr("username");
+        		$("#username").val(username);
+        		var privatekey = $("#users option:selected").attr("privatekey");
+        		$("#privatekey").val(privatekey);
+        		
+        		if($('#score').val() != "") {
+        		    var value = $('#score').val().replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+        		    var intRegex = /^\d+$/;
+        		    if(!intRegex.test(value)) {
+        		    	 alert("score is not a number")
+             		    return false;
+        		    }
+        		} else {
+        		    alert("score missing")
+        		    return false;
+        		}
+        		
+        		if($('#daycheckbox:checked').size()<1){
+        			$('#day').attr("disabled","disabled");
+        		} else {
+        			if($('#day').val() != "") {
+            		    var value = $('#day').val().replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+            		    var intRegex = /^\d+$/;
+            		    if(!intRegex.test(value)) {
+            		    	 alert("day is not a number")
+                 		    return false;
+            		    }
+            		} else {
+            		    alert("day missing")
+            		    return false;
+            		}
+        		}
+
+        		return true;
+        	}
+        	
+        	function reinitform(){
+        		$('#day').removeAttr("disabled");
+        	}
+        	
+        	  $(document).ready(function() { 
+        		  
+        		    var options = { 
+        		            target:        '#targetDiv',   // target element(s) to be updated with server response 
+        		            beforeSerialize:  refreshForm,  // pre-submit callback 
+        		            success:       reinitform  // post-submit callback 
+        		     
+        		            // other available options: 
+        		            //url:       url         // override for form's 'action' attribute 
+        		            //type:      type        // 'get' or 'post', override for form's 'method' attribute 
+        		            //dataType:  null        // 'xml', 'script', or 'json' (expected server response type) 
+        		            //clearForm: true        // clear all form fields after successful submit 
+        		            //resetForm: true        // reset the form after successful submit 
+        		     
+        		            // $.ajax options can be used here too, for example: 
+        		            //timeout:   3000 
+        		        }; 
+        		     
+        		        // bind form using 'ajaxForm' 
+        		   $('#form').ajaxForm(options); 
+        		        
+        		   $('#day').keyup(function() {
+        			   
+        			   var day = $('#day').val()
+        			   if(day != "") {
+	               		    var value = day.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+	               		    var intRegex = /^-?\d+$/;
+	               		    if(!intRegex.test(value)) {
+	                    		    return false;
+	               		    }
+	               		} else {
+	               		    return false;
+	               		}
+        			    var day = $('#day').val()
+        				var date = new Date(new Date(new Date().getFullYear(), 0).setDate(day)); // initialize a date in `year-01-01`
+
+        			   $('#date').val(date)
+        			   return true;
+        		   });
+              }); 
+        </script>
+    </head>
+    <body>
+    	<h1>Games - Leaderboards</h1>
+    	<form id="form" action="@{api.Leaderboards.score()}" target=""targetDiv"">
+			<select id="gameleaderboard">
+				#{list items:leaderboards, as:'leaderboard'}
+					<option value="${leaderboard.game.name}-${leaderboard.name}" apikey="${leaderboard.game.apikey}" leaderboard="${leaderboard.name}">${leaderboard.game.name}-${leaderboard.name}</option>
+	   			#{/list}
+			</select> 
+			<input id="apiKey" name="apiKey" value="" >
+			<input id="leaderboard" name="leaderboard" value="" >
+			<br>
+			<select id="users">
+				#{list users, as:'user'}
+					<option value="${user.username}" username="${user.username}" privatekey="${user.privatekey}">${user.username} - ${user.name}</option>
+	   			#{/list}
+			</select> 
+			<input id="username" name="user" value="" >
+			<input id="privatekey" name="privatekey" value="" >
+			<br>
+			Score: <input type="text" id="score" name="score">
+			<br>
+			<input id="daycheckbox" type="checkbox" value="override" /> <input type="text" id="day" name="dayofyear" > Date: <input type="text" id="date">
+			<input type="submit" >
+    	</form>
+    	
+    	<div id="targetDiv" name="targetDiv">
+    		
+    	</div>
+    </body>
+</html>

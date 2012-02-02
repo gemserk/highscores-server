@@ -10,6 +10,8 @@ import play.db.jpa.Model;
 public class User extends Model {
 	@Column(unique = true)
 	public String username;
+	
+	public String name;
 
 	public String passwordHash;
 

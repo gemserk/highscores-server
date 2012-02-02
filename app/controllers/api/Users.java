@@ -13,12 +13,13 @@ public class Users extends Controller {
 	static public void createGuest() {
 		User user = new User();
 		user.username = "Player" + (int) (Math.random() * 1000);
+		user.name = user.username;
 		user.guest = true;
 		user.passwordHash = "password";
 		user.privatekey = "privatekey";
 		user.save();
 		
-		UserDTO userDTO = new UserDTO(user.username, user.privatekey);
+		UserDTO userDTO = new UserDTO(user.username, user.name, user.privatekey);
 		renderJSON(userDTO);
 	}
 	

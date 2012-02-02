@@ -5,12 +5,16 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 
+import datatransfer.ScoreDTO;
+
 import models.Game;
 import models.Leaderboard;
 import models.Score;
 import models.User;
+import play.Play;
 import play.db.jpa.JPABase;
 import play.mvc.Controller;
+import utils.Range;
 
 public class Leaderboards extends Controller {
 
@@ -43,6 +47,11 @@ public class Leaderboards extends Controller {
 		
 		
 		DateTime dateTime = new DateTime();
+		String overridendayofyear = params.get("dayofyear");
+		if(Play.runingInTestMode() && overridendayofyear!= null) {
+			System.out.println("Overriding Date to " + overridendayofyear);
+			dateTime = dateTime.dayOfYear().setCopy(Integer.parseInt(overridendayofyear));
+		}
 		
 		int year = dateTime.getYear();
 		int month = dateTime.getMonthOfYear();
@@ -117,5 +126,36 @@ public class Leaderboards extends Controller {
 			scores[i].delete();
 		}
 	}
+	
+	public static void scores(){
+		String apiKey = params.get("apiKey");
+		Game game = Game.find("byApiKey", apiKey).first();
+		if(game==null)
+			error("No game matching apikey was found");
+		
+		String leaderboardName = params.get("leaderboard");
+		if(leaderboardName==null)
+			error("You need to provide the leaderboard name");
+		
+		Leaderboard leaderboard = Leaderboard.find("byGameAndName",game, leaderboardName).first();
+		
+		if(leaderboard==null)
+			error("Leaderboard ("+ leaderboardName +") doesn't match game (" + game.name + ")");
+		
+		String rangeKey = params.get("range");
+			
+		Range range = Range.getByKey(rangeKey);
+		if(range==null)
+			range = Range.All;
+		
+		int scope = range.scope;
+		
+		List<Score> scores = Leaderboard.find("select s from Score s where s.leaderboard = ? and s.scope <= ? order by s.score desc", leaderboard, scope).fetch();
+		
+		List<ScoreDTO> scoreDTOs = ScoreDTO.convert(scores);
+		renderJSON(scoreDTOs);
+		
+	}
+	
 	
 }
