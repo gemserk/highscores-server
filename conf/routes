@@ -8,6 +8,7 @@ GET     /                                       Application.index
 # Import CRUD routes
 *      /admin              module:crud
 *	   /admin/scores					admin.Scores.score
+*	   /admin/view					admin.Scores.view
 GET		/users/createGuest				api.Users.createGuest
 GET		/leaderboards/score				api.Leaderboards.score
 GET		/leaderboards/scores			api.Leaderboards.scores

@@ -20,9 +20,9 @@ import utils.Range;
 public class Leaderboards extends Controller {
 
 	private static final String scoresByAllTime = "select s from Score s where s.leaderboard = ? and s.scope <= ? order by s.score desc";
-	private static final String scoresByDay = "select s from Score s where s.leaderboard = ? and s.scope <= ? and s.day = ? order by s.score desc";
-	private static final String scoresByWeek = "select s from Score s where s.leaderboard = ? and s.scope <= ? and s.week = ? order by s.score desc";
-	private static final String scoresByMonth = "select s from Score s where s.leaderboard = ? and s.scope <= ? and s.month = ? order by s.score desc";
+	private static final String scoresByDay = "select s from Score s where s.leaderboard = ? and s.scope <= ? and s.year = ? and s.day = ? order by s.score desc";
+	private static final String scoresByWeek = "select s from Score s where s.leaderboard = ? and s.scope <= ? and s.year = ? and s.week = ? order by s.score desc";
+	private static final String scoresByMonth = "select s from Score s where s.leaderboard = ? and s.scope <= ? and s.year = ? and s.month = ? order by s.score desc";
 
 	static public void score() {
 		// Long leaderboardId = params.get("leaderboardId", Long.class);
@@ -126,6 +126,9 @@ public class Leaderboards extends Controller {
 	}
 
 	public static void scores() {
+		
+		System.out.println(params.allSimple());
+		
 		String apiKey = params.get("apiKey");
 		Game game = Game.find("byApiKey", apiKey).first();
 		if (game == null)
@@ -166,13 +169,13 @@ public class Leaderboards extends Controller {
 			scores = Leaderboard.find(scoresByAllTime, leaderboard, scope).fetch();
 			break;
 		case Month:
-			scores = Leaderboard.find(scoresByMonth, leaderboard, scope, month).fetch();
+			scores = Leaderboard.find(scoresByMonth, leaderboard, scope, year, month).fetch();
 			break;
 		case Week:
-			scores = Leaderboard.find(scoresByWeek, leaderboard, scope, week).fetch();
+			scores = Leaderboard.find(scoresByWeek, leaderboard, scope, year, week).fetch();
 			break;
 		case Day:
-			scores = Leaderboard.find(scoresByDay, leaderboard, scope, day).fetch();
+			scores = Leaderboard.find(scoresByDay, leaderboard, scope, year, day).fetch();
 			break;
 		}
 
