@@ -6,3 +6,6 @@
 /lib
 /modules
 /test-result/
+
+
+/conf/prod-config.conf
