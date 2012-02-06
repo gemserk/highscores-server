@@ -7,5 +7,7 @@
 /modules
 /test-result/
 /db
+/logs
+server.pid
 
 /conf/prod-config.conf
