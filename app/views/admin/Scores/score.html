@@ -100,25 +100,26 @@
     <body>
     	<h1>Games - Leaderboards</h1>
     	<form id="form" action="@{api.Leaderboards.score()}" target=""targetDiv"">
-			<select id="gameleaderboard">
+			Game-Leaderboard: <select id="gameleaderboard">
 				#{list items:leaderboards, as:'leaderboard'}
 					<option value="${leaderboard.game.name}-${leaderboard.name}" apikey="${leaderboard.game.apikey}" leaderboard="${leaderboard.name}">${leaderboard.game.name}-${leaderboard.name}</option>
 	   			#{/list}
 			</select> 
-			<input id="apiKey" name="apiKey" value="" >
-			<input id="leaderboard" name="leaderboard" value="" >
+			<input id="apiKey" name="apiKey" value=""  type="hidden">
+			<input id="leaderboard" name="leaderboard" value="" type="hidden">
 			<br>
-			<select id="users">
+			User: <select id="users">
 				#{list users, as:'user'}
 					<option value="${user.username}" username="${user.username}" privatekey="${user.privatekey}">${user.username} - ${user.name}</option>
 	   			#{/list}
 			</select> 
-			<input id="username" name="user" value="" >
-			<input id="privatekey" name="privatekey" value="" >
+			<input id="username" name="user" value="" type="hidden">
+			<input id="privatekey" name="privatekey" value="" type="hidden">
 			<br>
 			Score: <input type="text" id="score" name="score">
 			<br>
-			<input id="daycheckbox" type="checkbox" value="override" /> <input type="text" id="day" name="dayofyear" > Date: <input type="text" id="date">
+			Override Day: <input id="daycheckbox" type="checkbox" value="override" /> Day: <input type="text" id="day" name="dayofyear" > Date: <input type="text" id="date" disabled="disabled">
+			<br>
 			<input type="submit" >
     	</form>
     	
