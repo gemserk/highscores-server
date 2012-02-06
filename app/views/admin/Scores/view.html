@@ -9,6 +9,32 @@
         <script src="@{'/public/javascripts/jquery-1.6.4.min.js'}" type="text/javascript" charset="${_response_encoding}"></script>
          <script src="@{'/public/javascripts/jquery.form.js'}" type="text/javascript" charset="${_response_encoding}"></script>
            <script src="@{'/public/javascripts/template.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+        <style type="text/css">
+			table.sample {
+				border-width: 4px;
+				border-spacing: 2px;
+				border-style: outset;
+				border-color: gray;
+				border-collapse: separate;
+				background-color: white;
+			}
+			table.sample th {
+				border-width: 3px;
+				padding: 1px;
+				border-style: inset;
+				border-color: gray;
+				background-color: white;
+				-moz-border-radius: ;
+			}
+			table.sample td {
+				border-width: 3px;
+				padding: 1px;
+				border-style: inset;
+				border-color: gray;
+				background-color: white;
+				-moz-border-radius: ;
+			}
+		</style>
         <script type="text/javascript">
       		  
 
@@ -119,7 +145,7 @@
     	
 		<textarea id="templateScores" style="display:none;">	 
 			
-			<table>
+			<table class="sample">
 				 <tr><td>Username</td><td>Name</td><td>Score</td><td>Date</td></tr>
 				 {for score in scores}
 					<tr>
