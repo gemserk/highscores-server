@@ -1,3 +1,4 @@
+import java.lang.reflect.Type;
 import java.util.List;
 
 import models.Score;
@@ -6,15 +7,17 @@ import models.User;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.internal.matchers.IsCollectionContaining;
 
 import play.mvc.Http.Response;
 import play.test.Fixtures;
 import play.test.FunctionalTest;
+import utils.Range;
 import utils.URLBuilder;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import datatransfer.ScoreDTO;
 import datatransfer.UserDTO;
 
 public class ApplicationTest extends FunctionalTest {
@@ -84,7 +87,7 @@ public class ApplicationTest extends FunctionalTest {
 		String url = new URLBuilder("/leaderboards/score")//
 				.addQueryParameter("leaderboard", "leaderboard")//
 				.addQueryParameter("apiKey", "apikey")//
-				.addQueryParameter("privatekey",  user.privatekey)//
+				.addQueryParameter("privatekey", user.privatekey)//
 				.addQueryParameter("user", user.username)//
 				.addQueryParameter("score", Long.toString(scoreValue))//
 				.build();
@@ -106,7 +109,7 @@ public class ApplicationTest extends FunctionalTest {
 		url = new URLBuilder("/leaderboards/score")//
 				.addQueryParameter("leaderboard", "leaderboard")//
 				.addQueryParameter("apiKey", "apikey")//
-				.addQueryParameter("privatekey",  user.privatekey)//
+				.addQueryParameter("privatekey", user.privatekey)//
 				.addQueryParameter("user", user.username)//
 				.addQueryParameter("score", Long.toString(scoreValue2))//
 				.build();
@@ -123,8 +126,7 @@ public class ApplicationTest extends FunctionalTest {
 		assertThat(score.score, CoreMatchers.equalTo(scoreValue2));
 		assertThat(score.scope, CoreMatchers.equalTo(1));
 	}
-	
-	
+
 	@Test
 	public void submitALowerScoreOnTheSameDayWhenTheFirstOneWasBestOfAllTime() {
 
@@ -137,7 +139,7 @@ public class ApplicationTest extends FunctionalTest {
 		String url = new URLBuilder("/leaderboards/score")//
 				.addQueryParameter("leaderboard", "leaderboard")//
 				.addQueryParameter("apiKey", "apikey")//
-				.addQueryParameter("privatekey",  user.privatekey)//
+				.addQueryParameter("privatekey", user.privatekey)//
 				.addQueryParameter("user", user.username)//
 				.addQueryParameter("score", Long.toString(scoreValue))//
 				.build();
@@ -158,7 +160,7 @@ public class ApplicationTest extends FunctionalTest {
 		url = new URLBuilder("/leaderboards/score")//
 				.addQueryParameter("leaderboard", "leaderboard")//
 				.addQueryParameter("apiKey", "apikey")//
-				.addQueryParameter("privatekey",  user.privatekey)//
+				.addQueryParameter("privatekey", user.privatekey)//
 				.addQueryParameter("user", user.username)//
 				.addQueryParameter("score", Long.toString(scoreValue2))//
 				.build();
@@ -173,6 +175,92 @@ public class ApplicationTest extends FunctionalTest {
 		assertThat(scores.size(), CoreMatchers.equalTo(1));
 		score = scores.get(0);
 		assertThat(score.score, CoreMatchers.equalTo(scoreValue));
+	}
+
+	// two scores in different days but same month, the first one is the best score of all time, the second one is lower, and you can find it when you query by week or day.
+	@Test
+	public void submitTwoScoresDifferentDay() {
+
+		User user = User.find("byUsername", "user").first();
+
+		long scoreValue = 100;
+
+		String url = new URLBuilder("/leaderboards/score")//
+				.addQueryParameter("leaderboard", "leaderboard")//
+				.addQueryParameter("apiKey", "apikey")//
+				.addQueryParameter("privatekey", user.privatekey)//
+				.addQueryParameter("user", user.username)//
+				.addQueryParameter("score", Long.toString(scoreValue))//
+				.addQueryParameter("dayofyear", "1")//
+				.build();
+		Response response = GET(url);
+
+		assertIsOk(response);
+		assertContentType("text/plain", response);
+		assertCharset(play.Play.defaultWebEncoding, response);
+		assertContentEquals("Score submitted succesfully", response);
+
+		long scoreValue2 = 50;
+
+		url = new URLBuilder("/leaderboards/score")//
+				.addQueryParameter("leaderboard", "leaderboard")//
+				.addQueryParameter("apiKey", "apikey")//
+				.addQueryParameter("privatekey", user.privatekey)//
+				.addQueryParameter("user", user.username)//
+				.addQueryParameter("score", Long.toString(scoreValue2))//
+				.addQueryParameter("dayofyear", "20")//
+				.build();
+		response = GET(url);
+
+		assertIsOk(response);
+		assertContentType("text/plain", response);
+		assertCharset(play.Play.defaultWebEncoding, response);
+		assertContentEquals("Score submitted succesfully", response);
+
+		url = new URLBuilder("/leaderboards/scores")//
+				.addQueryParameter("leaderboard", "leaderboard")//
+				.addQueryParameter("apiKey", "apikey")//
+				.addQueryParameter("range", Range.All.key)//
+				.addQueryParameter("dayofyear", "20")//
+				.build();
+		response = GET(url);
+
+		assertIsOk(response);
+		assertContentType("application/json", response);
+		assertCharset(play.Play.defaultWebEncoding, response);
+
+		String content = getContent(response);
+		Gson gson = new Gson();
+		Type collectionType = new TypeToken<List<ScoreDTO>>() {
+		}.getType();
+		
+		List<ScoreDTO> scores = gson.fromJson(content, collectionType);
+
+		assertEquals(1, scores.size());
+		assertEquals(scoreValue, scores.get(0).score);
+
+		url = new URLBuilder("/leaderboards/scores")//
+				.addQueryParameter("leaderboard", "leaderboard")//
+				.addQueryParameter("apiKey", "apikey")//
+				.addQueryParameter("range", Range.Day.key)//
+				.addQueryParameter("dayofyear", "20")//
+				.build();
+		response = GET(url);
+
+		assertIsOk(response);
+		assertContentType("application/json", response);
+		assertCharset(play.Play.defaultWebEncoding, response);
+
+		content = getContent(response);
+		gson = new Gson();
+
+		collectionType = new TypeToken<List<ScoreDTO>>() {
+		}.getType();
+
+		scores = gson.fromJson(content, collectionType);
+
+		assertEquals(1, scores.size());
+		assertEquals(scoreValue2, scores.get(0).score);
 	}
 
 }
