@@ -262,5 +262,74 @@ public class ApplicationTest extends FunctionalTest {
 		assertEquals(1, scores.size());
 		assertEquals(scoreValue2, scores.get(0).score);
 	}
+	
+
+	@Test
+	public void submitTwoScoresForDifferentUsers() {
+
+		User user = User.find("byUsername", "user").first();
+		User user2 = User.find("byUsername", "user2").first();
+
+		long scoreValue = 100;
+
+		String url = new URLBuilder("/leaderboards/score")//
+				.addQueryParameter("leaderboard", "leaderboard")//
+				.addQueryParameter("apiKey", "apikey")//
+				.addQueryParameter("privatekey", user.privatekey)//
+				.addQueryParameter("user", user.username)//
+				.addQueryParameter("score", Long.toString(scoreValue))//
+				.addQueryParameter("dayofyear", "1")//
+				.build();
+		Response response = GET(url);
+
+		assertIsOk(response);
+		assertContentType("text/plain", response);
+		assertCharset(play.Play.defaultWebEncoding, response);
+		assertContentEquals("Score submitted succesfully", response);
+
+		long scoreValue2 = 50;
+
+		url = new URLBuilder("/leaderboards/score")//
+				.addQueryParameter("leaderboard", "leaderboard")//
+				.addQueryParameter("apiKey", "apikey")//
+				.addQueryParameter("privatekey", user2.privatekey)//
+				.addQueryParameter("user", user2.username)//
+				.addQueryParameter("score", Long.toString(scoreValue2))//
+				.addQueryParameter("dayofyear", "1")//
+				.build();
+		response = GET(url);
+
+		assertIsOk(response);
+		assertContentType("text/plain", response);
+		assertCharset(play.Play.defaultWebEncoding, response);
+		assertContentEquals("Score submitted succesfully", response);
+
+		url = new URLBuilder("/leaderboards/scores")//
+				.addQueryParameter("leaderboard", "leaderboard")//
+				.addQueryParameter("apiKey", "apikey")//
+				.addQueryParameter("range", Range.All.key)//
+				.addQueryParameter("dayofyear", "20")//
+				.build();
+		response = GET(url);
+
+		assertIsOk(response);
+		assertContentType("application/json", response);
+		assertCharset(play.Play.defaultWebEncoding, response);
+
+		String content = getContent(response);
+		Gson gson = new Gson();
+		Type collectionType = new TypeToken<List<ScoreDTO>>() {
+		}.getType();
+		
+		List<ScoreDTO> scores = gson.fromJson(content, collectionType);
+
+		assertEquals(2, scores.size());
+		assertEquals(scoreValue, scores.get(0).score);
+		assertEquals(user.name, scores.get(0).name);
+		assertEquals(scoreValue2, scores.get(1).score);
+		assertEquals(user2.name, scores.get(1).name);
+		
+		
+	}
 
 }

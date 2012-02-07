@@ -18,3 +18,11 @@ User(user):
    passwordHash: aslfdjaslfjs
    guest: false
    privatekey: privatekey
+
+User(user2):
+   username: user2
+   name: pipote perez
+   passwordHash: jfowjfowjfwoj
+   guest: false
+   privatekey: privatekey2
+   
