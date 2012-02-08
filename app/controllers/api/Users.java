@@ -11,9 +11,12 @@ import play.mvc.Controller;
 public class Users extends Controller {
 
 	static public void createGuest() {
+		
+		long guestNumber = User.getNextGuestNumber();
+		
 		User user = new User();
-		user.username = "Player" + (int) (Math.random() * 1000);
-		user.name = user.username;
+		user.name = "Player" + guestNumber;
+		user.username = user.name.toLowerCase();
 		user.guest = true;
 		user.passwordHash = "password";
 		user.privatekey = "privatekey";
