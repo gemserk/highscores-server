@@ -9,7 +9,7 @@ import javax.persistence.SequenceGenerator;
 import play.db.jpa.GenericModel;
 
 @Entity
-public class Useless extends GenericModel {
+public class UserSequenceHelper extends GenericModel {
 
 	public static final String SEQUENCENAME = "guestplayer_seq" ;
 	
