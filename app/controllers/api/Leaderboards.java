@@ -13,16 +13,17 @@ import models.Leaderboard;
 import models.Score;
 import models.User;
 import play.Play;
+import play.db.jpa.GenericModel.JPAQuery;
 import play.db.jpa.JPABase;
 import play.mvc.Controller;
 import utils.Range;
 
 public class Leaderboards extends Controller {
 
-	private static final String scoresByAllTime = "select s from Score s where s.leaderboard = ? and s.scope <= ? order by s.score desc";
-	private static final String scoresByDay = "select s from Score s where s.leaderboard = ? and s.scope <= ? and s.year = ? and s.day = ? order by s.score desc";
-	private static final String scoresByWeek = "select s from Score s where s.leaderboard = ? and s.scope <= ? and s.year = ? and s.week = ? order by s.score desc";
-	private static final String scoresByMonth = "select s from Score s where s.leaderboard = ? and s.scope <= ? and s.year = ? and s.month = ? order by s.score desc";
+	private static final String scoresByAllTime = "select s from Score s inner join fetch s.user where s.leaderboard = ? and s.scope <= ? order by s.score desc";
+	private static final String scoresByMonth = "select s from Score s inner join fetch s.user where s.leaderboard = ? and s.scope <= ? and s.year = ? and s.month = ? order by s.score desc";
+	private static final String scoresByWeek = "select s from Score s inner join fetch s.user where s.leaderboard = ? and s.scope <= ? and s.year = ? and s.week = ? order by s.score desc";
+	private static final String scoresByDay = "select s from Score s inner join fetch s.user where s.leaderboard = ? and s.scope <= ? and s.year = ? and s.day = ? order by s.score desc";
 
 	static public void score() {
 		// Long leaderboardId = params.get("leaderboardId", Long.class);
@@ -156,28 +157,42 @@ public class Leaderboards extends Controller {
 		if (Play.runingInTestMode() && overridendayofyear != null) {
 			System.out.println("Overriding Date to " + overridendayofyear);
 			dateTime = dateTime.dayOfYear().setCopy(Integer.parseInt(overridendayofyear));
-		}
+		}	
 
 		int year = dateTime.getYear();
 		int month = dateTime.getMonthOfYear();
 		int week = dateTime.getWeekOfWeekyear();
 		int day = dateTime.getDayOfYear();
 
-		List<Score> scores = new ArrayList<Score>();
+		JPAQuery query = null;
+		
 		switch (range) {
 		case All:
-			scores = Leaderboard.find(scoresByAllTime, leaderboard, scope).fetch();
+			query = Leaderboard.find(scoresByAllTime, leaderboard, scope);
 			break;
 		case Month:
-			scores = Leaderboard.find(scoresByMonth, leaderboard, scope, year, month).fetch();
+			query = Leaderboard.find(scoresByMonth, leaderboard, scope, year, month);
 			break;
 		case Week:
-			scores = Leaderboard.find(scoresByWeek, leaderboard, scope, year, week).fetch();
+			query = Leaderboard.find(scoresByWeek, leaderboard, scope, year, week);
 			break;
 		case Day:
-			scores = Leaderboard.find(scoresByDay, leaderboard, scope, year, day).fetch();
+			query = Leaderboard.find(scoresByDay, leaderboard, scope, year, day);
 			break;
 		}
+		
+		int page = 0;
+		int pageSize = 20;
+		
+		String pageParam = params.get("page");
+		if(pageParam!=null && pageParam!="")
+			page = Integer.parseInt(pageParam);
+		
+		String pageSizeParam = params.get("pageSize");
+		if(pageSizeParam!=null && pageSizeParam!="")
+			pageSize = Integer.parseInt(pageSizeParam);
+		
+		List<Score> scores = query.fetch(page,pageSize);
 
 		List<ScoreDTO> scoreDTOs = ScoreDTO.convert(scores);
 		renderJSON(scoreDTOs);
