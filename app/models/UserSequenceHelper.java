@@ -5,10 +5,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 import play.db.jpa.GenericModel;
 
 @Entity
+@Table(name="userSequenceHelper")
 public class UserSequenceHelper extends GenericModel {
 
 	public static final String SEQUENCENAME = "guestplayer_seq" ;

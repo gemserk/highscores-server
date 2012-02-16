@@ -22,7 +22,7 @@ public class Users extends Controller {
 		user.privatekey = "privatekey";
 		user.save();
 		
-		UserDTO userDTO = new UserDTO(user.username, user.name, user.privatekey);
+		UserDTO userDTO = new UserDTO(user.username, user.name, user.privatekey, true);
 		renderJSON(userDTO);
 	}
 	
@@ -44,7 +44,7 @@ public class Users extends Controller {
 		if(!user.privatekey.equals(privatekey))
 			error(401, "error authenticating the user");
 		
-		UserDTO userDTO = new UserDTO(user.username, user.name, user.privatekey);
+		UserDTO userDTO = new UserDTO(user.username, user.name, user.privatekey, user.guest);
 		renderJSON(userDTO);
 	}
 	
