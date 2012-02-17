@@ -51,6 +51,31 @@ public class Users extends Controller {
 	}
 	
 	static public void updateUser(){
+		String userId = params.get("userId");
+		if(userId==null || userId.equals(""))
+			error(400, "userId is required");
+				
+		String privatekey = params.get("privatekey");
+		
+		if(privatekey==null || privatekey.equals(""))
+			error(400, "privatekey is required");
+		
+		String newName = params.get("newName");
+		if(newName.matches("^[ \t]*$"))
+			error(400, "new Name must not be empty");
+		
+		newName = newName.substring(0, Math.min(50,newName.length()));
+		
+		User user = User.find("byUserId", Long.parseLong(userId)).first();
+		
+		if(!user.privatekey.equals(privatekey))
+			error(401, "error authenticating the user");
+		
+		user.name = newName;
+		
+		user.save();	
+		UserDTO userDTO = new UserDTO(user.userId, user.name, user.privatekey);
+		renderJSON(userDTO);
 	}
 	
 }

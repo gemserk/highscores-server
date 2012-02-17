@@ -10,6 +10,7 @@ GET     /                                       Application.index
 *	   /forms/score				forms.Scores.score
 *	   /forms/view					forms.Scores.view
 GET		/users/createGuest				api.Users.createGuest
+GET		/users/updateUser				api.Users.updateUser
 GET		/leaderboards/score				api.Leaderboards.score
 GET		/leaderboards/scores			api.Leaderboards.scores
 
