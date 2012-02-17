@@ -29,19 +29,19 @@ public class Users extends Controller {
 	}
 	
 	static public void getUserInfo() {
-		String username = params.get("username");
-		if(username==null || username.equals(""))
-			error(400, "username is required");
+		String publickey = params.get("publickey");
+		if(publickey==null || publickey.equals(""))
+			error(400, "publickey is required");
 				
 		String privatekey = params.get("privatekey");
 		
 		if(privatekey==null || privatekey.equals(""))
 			error(400, "privatekey is required");
 		
-		User user = User.find("byUsername", username).first();
+		User user = User.find("byPublickey", publickey).first();
 		
 		if(user==null)
-			error(404, "the user " + username + " doesn't exist");
+			error(404, "the user " + publickey + " doesn't exist");
 		
 		if(!user.privatekey.equals(privatekey))
 			error(401, "error authenticating the user");

@@ -25,7 +25,6 @@ public class Leaderboards extends Controller {
 	
 
 	static public void score() {
-		// Long leaderboardId = params.get("leaderboardId", Long.class);
 		String apiKey = params.get("apiKey");
 		Game game = Game.find("byApiKey", apiKey).first();
 		if (game == null)
@@ -40,9 +39,9 @@ public class Leaderboards extends Controller {
 		if (leaderboard == null)
 			error("Leaderboard (" + leaderboardName + ") doesn't match game (" + game.name + ")");
 
-		String publickey = params.get("user");
+		String publickey = params.get("publickey");
 		if (publickey == null)
-			error("You need to provide the username");
+			error("You need to provide the publickey of the user");
 
 		User user = User.find("byPublickey", Long.parseLong(publickey)).first();
 		if (!user.privatekey.equals(params.get("privatekey")))
