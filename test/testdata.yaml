@@ -13,16 +13,12 @@ Leaderboard(leaderboard):
    name: leaderboard
    
 User(user):
-   username: user
-   name: pipote
-   passwordHash: aslfdjaslfjs
-   guest: false
+   name: user
+   publickey: 1
    privatekey: privatekey
 
 User(user2):
-   username: user2
-   name: pipote perez
-   passwordHash: jfowjfowjfwoj
-   guest: false
+   name: user2
+   publickey: 2
    privatekey: privatekey2
    

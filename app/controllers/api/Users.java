@@ -2,27 +2,29 @@ package controllers.api;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import datatransfer.UserDTO;
 
 import models.User;
+import play.libs.Crypto;
 import play.mvc.Controller;
 
 public class Users extends Controller {
+
+	public static final String PLAYER_GUEST_PREFIX = "Player";
 
 	static public void createGuest() {
 		
 		long guestNumber = User.getNextGuestNumber();
 		
 		User user = new User();
-		user.name = "Player" + guestNumber;
-		user.username = user.name.toLowerCase();
-		user.guest = true;
-		user.passwordHash = "password";
+		user.publickey = guestNumber;
+		user.name = PLAYER_GUEST_PREFIX + guestNumber;
 		user.privatekey = "privatekey";
 		user.save();
 		
-		UserDTO userDTO = new UserDTO(user.username, user.name, user.privatekey, true);
+		UserDTO userDTO = new UserDTO(user.publickey, user.name, user.privatekey);
 		renderJSON(userDTO);
 	}
 	
@@ -44,8 +46,11 @@ public class Users extends Controller {
 		if(!user.privatekey.equals(privatekey))
 			error(401, "error authenticating the user");
 		
-		UserDTO userDTO = new UserDTO(user.username, user.name, user.privatekey, user.guest);
+		UserDTO userDTO = new UserDTO(user.publickey, user.name, user.privatekey);
 		renderJSON(userDTO);
+	}
+	
+	static public void updateUser(){
 	}
 	
 }

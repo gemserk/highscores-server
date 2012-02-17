@@ -20,7 +20,6 @@ public class Scores extends CRUD{
 	
 	static public void view(){
 		List<Leaderboards> leaderboards = Leaderboard.find("select l from Leaderboard l, Game g where l.game = g order by g.name").fetch();
-		List<User> users = User.findAll();
 		renderArgs.put("leaderboards", leaderboards);
 		renderArgs.put("ranges", Range.values());
 		render();

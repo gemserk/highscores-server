@@ -22,14 +22,9 @@ public class User extends GenericModel {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
 	public Long id;
 	
-	@Column(unique = true)
-	public String username;
+	public Long publickey; 
 	
 	public String name;
-
-	public String passwordHash;
-
-	public boolean guest;
 
 	public String privatekey;
 	

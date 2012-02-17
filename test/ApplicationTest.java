@@ -17,6 +17,8 @@ import utils.URLBuilder;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import controllers.api.Users;
+
 import datatransfer.ScoreDTO;
 import datatransfer.UserDTO;
 
@@ -42,7 +44,7 @@ public class ApplicationTest extends FunctionalTest {
 		Gson gson = new Gson();
 		UserDTO userDTO = gson.fromJson(content, UserDTO.class);
 
-		assertTrue(userDTO.username.startsWith("Player"));
+		assertTrue(userDTO.name.startsWith(Users.PLAYER_GUEST_PREFIX));
 	}
 
 	@Test
@@ -50,7 +52,7 @@ public class ApplicationTest extends FunctionalTest {
 
 		// /leaderboards/score?leaderboardId=1&apiKey=apikey&score=100&authToken=authToken&user=1&authToken=authToken
 
-		User user = User.find("byUsername", "user").first();
+		User user = User.find("byName", "user").first();
 
 		long scoreValue = 100;
 
@@ -58,7 +60,7 @@ public class ApplicationTest extends FunctionalTest {
 				.addQueryParameter("leaderboard", "leaderboard")//
 				.addQueryParameter("apiKey", "apikey")//
 				.addQueryParameter("privatekey", user.privatekey)//
-				.addQueryParameter("user", user.username)//
+				.addQueryParameter("user", Long.toString(user.publickey))//
 				.addQueryParameter("score", Long.toString(scoreValue))//
 				.build();
 		Response response = GET(url);
@@ -80,7 +82,7 @@ public class ApplicationTest extends FunctionalTest {
 
 		// /leaderboards/score?leaderboardId=1&apiKey=apikey&score=100&authToken=authToken&user=1&authToken=authToken
 
-		User user = User.find("byUsername", "user").first();
+		User user = User.find("byName", "user").first();
 
 		long scoreValue = 100;
 
@@ -88,7 +90,7 @@ public class ApplicationTest extends FunctionalTest {
 				.addQueryParameter("leaderboard", "leaderboard")//
 				.addQueryParameter("apiKey", "apikey")//
 				.addQueryParameter("privatekey", user.privatekey)//
-				.addQueryParameter("user", user.username)//
+				.addQueryParameter("user", Long.toString(user.publickey))//
 				.addQueryParameter("score", Long.toString(scoreValue))//
 				.build();
 		Response response = GET(url);
@@ -110,7 +112,7 @@ public class ApplicationTest extends FunctionalTest {
 				.addQueryParameter("leaderboard", "leaderboard")//
 				.addQueryParameter("apiKey", "apikey")//
 				.addQueryParameter("privatekey", user.privatekey)//
-				.addQueryParameter("user", user.username)//
+				.addQueryParameter("user", Long.toString(user.publickey))//
 				.addQueryParameter("score", Long.toString(scoreValue2))//
 				.build();
 		response = GET(url);
@@ -132,7 +134,7 @@ public class ApplicationTest extends FunctionalTest {
 
 		// /leaderboards/score?leaderboardId=1&apiKey=apikey&score=100&authToken=authToken&user=1&authToken=authToken
 
-		User user = User.find("byUsername", "user").first();
+		User user = User.find("byName", "user").first();
 
 		long scoreValue = 100;
 
@@ -140,7 +142,7 @@ public class ApplicationTest extends FunctionalTest {
 				.addQueryParameter("leaderboard", "leaderboard")//
 				.addQueryParameter("apiKey", "apikey")//
 				.addQueryParameter("privatekey", user.privatekey)//
-				.addQueryParameter("user", user.username)//
+				.addQueryParameter("user", Long.toString(user.publickey))//
 				.addQueryParameter("score", Long.toString(scoreValue))//
 				.build();
 		Response response = GET(url);
@@ -161,7 +163,7 @@ public class ApplicationTest extends FunctionalTest {
 				.addQueryParameter("leaderboard", "leaderboard")//
 				.addQueryParameter("apiKey", "apikey")//
 				.addQueryParameter("privatekey", user.privatekey)//
-				.addQueryParameter("user", user.username)//
+				.addQueryParameter("user", Long.toString(user.publickey))//
 				.addQueryParameter("score", Long.toString(scoreValue2))//
 				.build();
 		response = GET(url);
@@ -181,7 +183,7 @@ public class ApplicationTest extends FunctionalTest {
 	@Test
 	public void submitTwoScoresDifferentDay() {
 
-		User user = User.find("byUsername", "user").first();
+		User user = User.find("byName", "user").first();;
 
 		long scoreValue = 100;
 
@@ -189,7 +191,7 @@ public class ApplicationTest extends FunctionalTest {
 				.addQueryParameter("leaderboard", "leaderboard")//
 				.addQueryParameter("apiKey", "apikey")//
 				.addQueryParameter("privatekey", user.privatekey)//
-				.addQueryParameter("user", user.username)//
+				.addQueryParameter("user", Long.toString(user.publickey))//
 				.addQueryParameter("score", Long.toString(scoreValue))//
 				.addQueryParameter("dayofyear", "1")//
 				.build();
@@ -206,7 +208,7 @@ public class ApplicationTest extends FunctionalTest {
 				.addQueryParameter("leaderboard", "leaderboard")//
 				.addQueryParameter("apiKey", "apikey")//
 				.addQueryParameter("privatekey", user.privatekey)//
-				.addQueryParameter("user", user.username)//
+				.addQueryParameter("user", Long.toString(user.publickey))//
 				.addQueryParameter("score", Long.toString(scoreValue2))//
 				.addQueryParameter("dayofyear", "20")//
 				.build();
@@ -267,8 +269,8 @@ public class ApplicationTest extends FunctionalTest {
 	@Test
 	public void submitTwoScoresForDifferentUsers() {
 
-		User user = User.find("byUsername", "user").first();
-		User user2 = User.find("byUsername", "user2").first();
+		User user = User.find("byName", "user").first();
+		User user2 = User.find("byName", "user2").first();
 
 		long scoreValue = 100;
 
@@ -276,7 +278,7 @@ public class ApplicationTest extends FunctionalTest {
 				.addQueryParameter("leaderboard", "leaderboard")//
 				.addQueryParameter("apiKey", "apikey")//
 				.addQueryParameter("privatekey", user.privatekey)//
-				.addQueryParameter("user", user.username)//
+				.addQueryParameter("user", Long.toString(user.publickey))//
 				.addQueryParameter("score", Long.toString(scoreValue))//
 				.addQueryParameter("dayofyear", "1")//
 				.build();
@@ -293,7 +295,7 @@ public class ApplicationTest extends FunctionalTest {
 				.addQueryParameter("leaderboard", "leaderboard")//
 				.addQueryParameter("apiKey", "apikey")//
 				.addQueryParameter("privatekey", user2.privatekey)//
-				.addQueryParameter("user", user2.username)//
+				.addQueryParameter("user", Long.toString(user2.publickey))//
 				.addQueryParameter("score", Long.toString(scoreValue2))//
 				.addQueryParameter("dayofyear", "1")//
 				.build();
