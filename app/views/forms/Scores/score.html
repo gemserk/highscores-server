@@ -15,8 +15,8 @@
         		var leaderboard = $("#gameleaderboard option:selected").attr("leaderboard");
         		$("#leaderboard").val(leaderboard);
         		
-        		var username = $("#users option:selected").attr("username");
-        		$("#username").val(username);
+        		var username = $("#users option:selected").attr("userId");
+        		$("#userId").val(username);
         		var privatekey = $("#users option:selected").attr("privatekey");
         		$("#privatekey").val(privatekey);
         		
@@ -110,10 +110,10 @@
 			<br>
 			User: <select id="users">
 				#{list users, as:'user'}
-					<option value="${user.username}" username="${user.username}" privatekey="${user.privatekey}">${user.username} - ${user.name}</option>
+					<option value="${user.userId}" userId="${user.userId}" privatekey="${user.privatekey}">${user.userId} - ${user.name}</option>
 	   			#{/list}
 			</select> 
-			<input id="username" name="user" value="" type="hidden">
+			<input id="userId" name="userId" value="" type="hidden">
 			<input id="privatekey" name="privatekey" value="" type="hidden">
 			<br>
 			Score: <input type="text" id="score" name="score">

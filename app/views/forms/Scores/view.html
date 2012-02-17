@@ -147,13 +147,12 @@
 		<textarea id="templateScores" style="display:none;">	 
 			
 			<table class="sample">
-				 <tr><td>Username</td><td>Name</td><td>Score</td><td>Date</td></tr>
+				 <tr><td>UserId</td><td>Name</td><td>Score</td></tr>
 				 {for score in scores}
 					<tr>
-						<td>&#36;{score.username}</td>
+						<td>&#36;{score.userId}</td>
 						<td>&#36;{score.name}</td>
 						<td>&#36;{score.score}</td>
-						<td>&#36;{score.date}</td>
 					</tr>
 				 {forelse}
 				     <tr><td colspan="4">No scores</tr>
