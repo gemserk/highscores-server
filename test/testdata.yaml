@@ -14,11 +14,11 @@ Leaderboard(leaderboard):
    
 User(user):
    name: user
-   publickey: 1
+   userId: 50000
    privatekey: privatekey
 
 User(user2):
    name: user2
-   publickey: 2
+   userId: 50001
    privatekey: privatekey2
    

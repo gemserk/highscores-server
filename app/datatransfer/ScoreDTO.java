@@ -9,12 +9,12 @@ import models.Score;
 
 public class ScoreDTO {
 
-	public long publickey;
+	public long userId;
 	public String name;
 	public long score;
 	
 	public ScoreDTO(Score score){
-		this.publickey = score.user.publickey;
+		this.userId = score.user.userId;
 		this.name = score.user.name;
 		this.score = score.score;
 	}

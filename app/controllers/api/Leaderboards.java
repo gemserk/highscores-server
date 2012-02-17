@@ -39,11 +39,11 @@ public class Leaderboards extends Controller {
 		if (leaderboard == null)
 			error("Leaderboard (" + leaderboardName + ") doesn't match game (" + game.name + ")");
 
-		String publickey = params.get("publickey");
-		if (publickey == null)
-			error("You need to provide the publickey of the user");
+		String userId = params.get("userId");
+		if (userId == null)
+			error("You need to provide the userId of the user");
 
-		User user = User.find("byPublickey", Long.parseLong(publickey)).first();
+		User user = User.find("byUserId", Long.parseLong(userId)).first();
 		if (!user.privatekey.equals(params.get("privatekey")))
 			error("User authentication failed");
 

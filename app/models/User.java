@@ -22,7 +22,8 @@ public class User extends GenericModel {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
 	public Long id;
 	
-	public Long publickey; 
+	@Column(unique = true)
+	public Long userId; 
 	
 	public String name;
 

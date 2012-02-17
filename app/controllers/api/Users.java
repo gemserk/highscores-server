@@ -19,34 +19,34 @@ public class Users extends Controller {
 		long guestNumber = User.getNextGuestNumber();
 		
 		User user = new User();
-		user.publickey = guestNumber;
+		user.userId = guestNumber;
 		user.name = PLAYER_GUEST_PREFIX + guestNumber;
 		user.privatekey = "privatekey";
 		user.save();
 		
-		UserDTO userDTO = new UserDTO(user.publickey, user.name, user.privatekey);
+		UserDTO userDTO = new UserDTO(user.userId, user.name, user.privatekey);
 		renderJSON(userDTO);
 	}
 	
 	static public void getUserInfo() {
-		String publickey = params.get("publickey");
-		if(publickey==null || publickey.equals(""))
-			error(400, "publickey is required");
+		String userId = params.get("userId");
+		if(userId==null || userId.equals(""))
+			error(400, "userId is required");
 				
 		String privatekey = params.get("privatekey");
 		
 		if(privatekey==null || privatekey.equals(""))
 			error(400, "privatekey is required");
 		
-		User user = User.find("byPublickey", publickey).first();
+		User user = User.find("byUserId", userId).first();
 		
 		if(user==null)
-			error(404, "the user " + publickey + " doesn't exist");
+			error(404, "the user " + userId + " doesn't exist");
 		
 		if(!user.privatekey.equals(privatekey))
 			error(401, "error authenticating the user");
 		
-		UserDTO userDTO = new UserDTO(user.publickey, user.name, user.privatekey);
+		UserDTO userDTO = new UserDTO(user.userId, user.name, user.privatekey);
 		renderJSON(userDTO);
 	}
 	

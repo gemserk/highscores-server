@@ -12,9 +12,3 @@ Leaderboard(leaderboard):
    game: vampire
    name: leaderboard
    
-User(user):
-   username: user
-   name: pipote
-   passwordHash: aslfdjaslfjs
-   guest: false
-   privatekey: privatekey
