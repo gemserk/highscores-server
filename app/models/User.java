@@ -29,6 +29,8 @@ public class User extends GenericModel {
 
 	public String privatekey;
 	
+	public boolean guest;
+	
 	public static long getNextGuestNumber(){
 		BigInteger guestNumber = (BigInteger) JPA.em().createNativeQuery("select nextval('" + UserSequenceHelper.SEQUENCENAME + "')").getSingleResult();
 		return guestNumber.longValue();

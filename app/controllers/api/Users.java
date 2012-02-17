@@ -22,9 +22,10 @@ public class Users extends Controller {
 		user.userId = guestNumber;
 		user.name = PLAYER_GUEST_PREFIX + guestNumber;
 		user.privatekey = "privatekey";
+		user.guest = true;
 		user.save();
 		
-		UserDTO userDTO = new UserDTO(user.userId, user.name, user.privatekey);
+		UserDTO userDTO = new UserDTO(user.userId, user.name, user.privatekey, user.guest);
 		renderJSON(userDTO);
 	}
 	
@@ -46,7 +47,7 @@ public class Users extends Controller {
 		if(!user.privatekey.equals(privatekey))
 			error(401, "error authenticating the user");
 		
-		UserDTO userDTO = new UserDTO(user.userId, user.name, user.privatekey);
+		UserDTO userDTO = new UserDTO(user.userId, user.name, user.privatekey, user.guest);
 		renderJSON(userDTO);
 	}
 	
@@ -72,9 +73,10 @@ public class Users extends Controller {
 			error(401, "error authenticating the user");
 		
 		user.name = newName;
+		user.guest = false;
 		
 		user.save();	
-		UserDTO userDTO = new UserDTO(user.userId, user.name, user.privatekey);
+		UserDTO userDTO = new UserDTO(user.userId, user.name, user.privatekey, user.guest);
 		renderJSON(userDTO);
 	}
 	
