@@ -6,7 +6,7 @@
 /lib
 /modules
 /test-result/
-/db
+/db/h2
 /logs
 server.pid
 
