@@ -1,5 +1,6 @@
 package models;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,7 +20,10 @@ public class Game extends GenericModel {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "game_seq")
 	public Long id;
 	
+	@Column(unique=true)
 	public String name;
+	
+	@Column(unique=true)
 	public String apikey;
 
 }
