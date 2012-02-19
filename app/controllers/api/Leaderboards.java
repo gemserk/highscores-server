@@ -28,24 +28,24 @@ public class Leaderboards extends Controller {
 		String apiKey = params.get("apiKey");
 		Game game = Game.find("byApiKey", apiKey).first();
 		if (game == null)
-			error("No game matching apikey was found");
+			error(450,"No game matching apikey was found");
 
 		String leaderboardName = params.get("leaderboard");
 		if (leaderboardName == null)
-			error("You need to provide the leaderboard name");
+			error(451,"You need to provide the leaderboard name");
 
 		Leaderboard leaderboard = Leaderboard.find("byGameAndName", game, leaderboardName).first();
 
 		if (leaderboard == null)
-			error("Leaderboard (" + leaderboardName + ") doesn't match game (" + game.name + ")");
+			error(452,"Leaderboard (" + leaderboardName + ") doesn't match game (" + game.name + ")");
 
 		String userId = params.get("userId");
 		if (userId == null)
-			error("You need to provide the userId of the user");
+			error(453,"You need to provide the userId of the user");
 
 		User user = User.find("byUserId", Long.parseLong(userId)).first();
 		if (!user.privatekey.equals(params.get("privatekey")))
-			error("User authentication failed");
+			error(454,"User authentication failed");
 
 		Long scoreValue = params.get("score", Long.class);
 
@@ -70,16 +70,16 @@ public class Leaderboards extends Controller {
 		String apiKey = params.get("apiKey");
 		Game game = Game.find("byApiKey", apiKey).first();
 		if (game == null)
-			error("No game matching apikey was found");
+			error(450,"No game matching apikey was found");
 
 		String leaderboardName = params.get("leaderboard");
 		if (leaderboardName == null)
-			error("You need to provide the leaderboard name");
+			error(451,"You need to provide the leaderboard name");
 
 		Leaderboard leaderboard = Leaderboard.find("byGameAndName", game, leaderboardName).first();
 
 		if (leaderboard == null)
-			error("Leaderboard (" + leaderboardName + ") doesn't match game (" + game.name + ")");
+			error(452,"Leaderboard (" + leaderboardName + ") doesn't match game (" + game.name + ")");
 
 		String rangeKey = params.get("range");
 
