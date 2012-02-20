@@ -17,8 +17,8 @@ public class Test extends Controller {
 
 	@Before
 	static void onlyRunInTest() {
-		if (!Play.runingInTestMode())
-			error(403, "Only available in test mode");
+//		if (!Play.runingInTestMode())
+//			error(403, "Only available in test mode");
 	}
 
 	static public void init() {
@@ -38,6 +38,15 @@ public class Test extends Controller {
 	}
 
 	static public void generateLotsOfScores(){
+		long timeStart = System.currentTimeMillis();
+		Integer quantity = params.get("quantity",Integer.class);
+		if(quantity==null)
+			quantity = 100;
+		
+		Float chance = params.get("chance",Float.class);
+		if(chance==null)
+			chance = 0.2f;
+		
 		User[] users = User.findAll().toArray(new User[]{});
 		
 		Leaderboard leaderboard = (Leaderboard) Leaderboard.findAll().get(0);
@@ -45,14 +54,20 @@ public class Test extends Controller {
 		DateTime dateTime = new DateTime();
 		
 		Random random = new Random();
-		for(int i = 0; i<100; i++){
+		for(int i = 0; i<quantity; i++){
 			User user = users[random.nextInt(users.length)];
 			long scoreValue = random.nextInt(1000);
-			if(random.nextFloat()<0.2f)
+			if(random.nextFloat()<chance)
 				dateTime = dateTime.dayOfYear().addToCopy(1);
 			
 			LeaderboardService.submitScore(leaderboard, user, scoreValue, dateTime);
+			if(i%100==0)
+				System.out.println("Submitting score: " + i);
 		}
+		
+		long duration = System.currentTimeMillis() - timeStart;
+		
+		renderText("Time to create " + quantity + " scores was: " + duration + " milliseconds");
 		
 	}
 }

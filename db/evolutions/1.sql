@@ -48,13 +48,12 @@ ALTER TABLE scores ADD CONSTRAINT fkc9e4942148bf5ef6 FOREIGN KEY (leaderboard_id
 CREATE INDEX scores_by_user ON scores (user_id);
 
 -- scores all
-CREATE INDEX scores_all ON scores (leaderboard_id, scope, score desc);
-
+CREATE INDEX scores_all ON scores (leaderboard_id, score desc) where scope <=1;
 -- scores by month
-CREATE INDEX scores_by_month ON scores (leaderboard_id, scope, month, score desc);
+CREATE INDEX scores_by_month ON scores (leaderboard_id, year, month, score desc) where scope <=2;
 -- scores by week
-CREATE INDEX scores_by_week ON scores (leaderboard_id, scope, week, score desc);
+CREATE INDEX scores_by_week ON scores (leaderboard_id, year, week, score desc) where scope <=3;
 -- scores by day
-CREATE INDEX scores_by_day ON scores (leaderboard_id, scope, day, score desc);
+CREATE INDEX scores_by_day ON scores (leaderboard_id, year, day, score desc) where scope <=4;
 
 # --- !Downs
