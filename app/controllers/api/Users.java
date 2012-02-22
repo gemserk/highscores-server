@@ -21,7 +21,7 @@ public class Users extends Controller {
 		User user = new User();
 		user.userId = guestNumber;
 		user.name = PLAYER_GUEST_PREFIX + guestNumber;
-		user.privatekey = "privatekey";
+		user.privatekey = UUID.randomUUID().toString();
 		user.guest = true;
 		user.save();
 		
