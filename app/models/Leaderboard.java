@@ -24,5 +24,11 @@ public class Leaderboard extends GenericModel{
 	public Long id;
 	
 	@Required  @ManyToOne public Game game;
+	
 	public String name;
+	
+	@Override
+	public String toString() {
+		return game.name + " - " + name;
+	}
 }

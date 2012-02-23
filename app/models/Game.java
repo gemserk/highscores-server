@@ -25,5 +25,10 @@ public class Game extends GenericModel {
 	
 	@Column(unique=true)
 	public String apikey;
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 
 }
