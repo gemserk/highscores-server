@@ -4,11 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import datatransfer.ErrorDTO;
 import datatransfer.UserDTO;
 
 import models.User;
 import play.libs.Crypto;
 import play.mvc.Controller;
+import utils.Errors;
 
 public class Users extends Controller {
 
@@ -32,20 +34,20 @@ public class Users extends Controller {
 	static public void getUserInfo() {
 		String userId = params.get("userId");
 		if(userId==null || userId.equals(""))
-			error(400, "userId is required");
+			renderError(Errors.InvalidUser, "userId is required");
 				
 		String privatekey = params.get("privatekey");
 		
 		if(privatekey==null || privatekey.equals(""))
-			error(400, "privatekey is required");
+			renderError(Errors.UserAuthenticationFailed, "privatekey is required");
 		
 		User user = User.find("byUserId", userId).first();
 		
 		if(user==null)
-			error(404, "the user " + userId + " doesn't exist");
+			renderError(Errors.InvalidUser, "the user " + userId + " doesn't exist");
 		
 		if(!user.privatekey.equals(privatekey))
-			error(401, "error authenticating the user");
+			renderError(Errors.UserAuthenticationFailed, "error authenticating the user");
 		
 		UserDTO userDTO = new UserDTO(user.userId, user.name, user.privatekey, user.guest);
 		renderJSON(userDTO);
@@ -54,12 +56,12 @@ public class Users extends Controller {
 	static public void updateUser(){
 		String userId = params.get("userId");
 		if(userId==null || userId.equals(""))
-			error(400, "userId is required");
+			renderError(Errors.InvalidUser, "userId is required");
 				
 		String privatekey = params.get("privatekey");
 		
 		if(privatekey==null || privatekey.equals(""))
-			error(400, "privatekey is required");
+			renderError(Errors.UserAuthenticationFailed, "privatekey is required");
 		
 		String newName = params.get("newName");
 		if(newName.matches("^[ \t]*$"))
@@ -70,7 +72,7 @@ public class Users extends Controller {
 		User user = User.find("byUserId", Long.parseLong(userId)).first();
 		
 		if(!user.privatekey.equals(privatekey))
-			error(401, "error authenticating the user");
+			renderError(Errors.UserAuthenticationFailed, "error authenticating the user");
 		
 		user.name = newName;
 		user.guest = false;
@@ -78,6 +80,12 @@ public class Users extends Controller {
 		user.save();	
 		UserDTO userDTO = new UserDTO(user.userId, user.name, user.privatekey, user.guest);
 		renderJSON(userDTO);
+	}
+	
+	private static void renderError(Errors error, String message){
+		response.status = Errors.MAINERROR;
+		ErrorDTO errorDTO = new ErrorDTO(error.errorCode,message);
+		renderJSON(errorDTO);
 	}
 	
 }

@@ -1,24 +1,21 @@
 package controllers.api;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-
-import org.joda.time.DateTime;
-
-import controllers.services.LeaderboardService;
-
-import datatransfer.ScoreDTO;
 
 import models.Game;
 import models.Leaderboard;
 import models.Score;
 import models.User;
+
+import org.joda.time.DateTime;
+
 import play.Play;
-import play.db.jpa.GenericModel.JPAQuery;
-import play.db.jpa.JPABase;
 import play.mvc.Controller;
+import utils.Errors;
 import utils.Range;
+import controllers.services.LeaderboardService;
+import datatransfer.ErrorDTO;
+import datatransfer.ScoreDTO;
 
 public class Leaderboards extends Controller {
 
@@ -28,24 +25,27 @@ public class Leaderboards extends Controller {
 		String apiKey = params.get("apiKey");
 		Game game = Game.find("byApiKey", apiKey).first();
 		if (game == null)
-			error(450,"No game matching apikey was found");
+			renderError(Errors.InvalidApiKey,"No game matching apikey was found");
 
 		String leaderboardName = params.get("leaderboard");
 		if (leaderboardName == null)
-			error(451,"You need to provide the leaderboard name");
+			renderError(Errors.InvalidLeaderboard,"You need to provide the leaderboard name");
 
 		Leaderboard leaderboard = Leaderboard.find("byGameAndName", game, leaderboardName).first();
 
 		if (leaderboard == null)
-			error(452,"Leaderboard (" + leaderboardName + ") doesn't match game (" + game.name + ")");
+			renderError(Errors.InvalidLeaderboard,"Leaderboard (" + leaderboardName + ") doesn't match game (" + game.name + ")");
 
 		String userId = params.get("userId");
 		if (userId == null)
-			error(453,"You need to provide the userId of the user");
+			renderError(Errors.InvalidUser,"You need to provide the userId of the user");
 
 		User user = User.find("byUserId", Long.parseLong(userId)).first();
+		if(user == null)
+			renderError(Errors.InvalidUser,"Could not find user with userId" + userId);
+		
 		if (!user.privatekey.equals(params.get("privatekey")))
-			error(454,"User authentication failed");
+			renderError(Errors.UserAuthenticationFailed,"User authentication failed");
 
 		Long scoreValue = params.get("score", Long.class);
 
@@ -70,16 +70,16 @@ public class Leaderboards extends Controller {
 		String apiKey = params.get("apiKey");
 		Game game = Game.find("byApiKey", apiKey).first();
 		if (game == null)
-			error(450,"No game matching apikey was found");
+			renderError(Errors.InvalidApiKey,"No game matching apikey was found");
 
 		String leaderboardName = params.get("leaderboard");
 		if (leaderboardName == null)
-			error(451,"You need to provide the leaderboard name");
+			renderError(Errors.InvalidLeaderboard,"You need to provide the leaderboard name");
 
 		Leaderboard leaderboard = Leaderboard.find("byGameAndName", game, leaderboardName).first();
 
 		if (leaderboard == null)
-			error(452,"Leaderboard (" + leaderboardName + ") doesn't match game (" + game.name + ")");
+			renderError(Errors.InvalidLeaderboard,"Leaderboard (" + leaderboardName + ") doesn't match game (" + game.name + ")");
 
 		String rangeKey = params.get("range");
 
@@ -111,6 +111,11 @@ public class Leaderboards extends Controller {
 
 		List<ScoreDTO> scoreDTOs = ScoreDTO.convert(scores);
 		renderJSON(scoreDTOs);
-
+	}
+	
+	private static void renderError(Errors error, String message){
+		response.status = Errors.MAINERROR;
+		ErrorDTO errorDTO = new ErrorDTO(error.errorCode,message);
+		renderJSON(errorDTO);
 	}
 }
