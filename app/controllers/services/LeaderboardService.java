@@ -91,11 +91,27 @@ public class LeaderboardService {
 					result.replacedScores = i;
 					break;
 				} else {
-					score.scope++;
+					score.scope= calculateCandidateScopeForWorseScore(oldScore, score);
 				}
 			}
 		}
 		return result;
+	}
+
+	static int calculateCandidateScopeForWorseScore(Score oldScore, Score score) {
+		if (oldScore.year != score.year)
+			return Range.Month.scope;
+		
+		if (oldScore.day == score.day)
+			return Range.Day.scope;
+		
+		if (oldScore.week == score.week)
+			return Range.Day.scope;
+		
+		if (oldScore.month == score.month)
+			return Range.Week.scope;
+		
+		return Range.Month.scope;
 	}
 
 	public static List<Score> getScores(Leaderboard leaderboard, Range range, DateTime dateTime, int page, int pageSize) {

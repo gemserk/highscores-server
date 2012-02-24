@@ -28,6 +28,15 @@ public class LeaderboardServiceTest {
 		score.day = day;
 		return score;
 	}
+	
+	private Score score(int year, int month, int week, int day) {
+		Score score = new Score();
+		score.year = year;
+		score.month = month;
+		score.week = week;
+		score.day = day;
+		return score;
+	}
 
 	private Score score(int year, int month, int week, int day, Range range, long points) {
 		return score(year, month, week, day, range.scope, points);
@@ -82,8 +91,7 @@ public class LeaderboardServiceTest {
 
 	@Test
 	public void shouldBeBestOfTodayButNotYesterday() {
-		Score[] scores = new Score[] { //
-		score(1, 1, 1, 1, 1, 500), //
+		Score[] scores = new Score[] { score(1, 1, 1, 1, 1, 500), //
 				score(1, 1, 1, 2, 2, 450), //
 				score(1, 1, 1, 3, 3, 350), //
 				score(1, 1, 1, 4, 4, 250) //
@@ -168,5 +176,28 @@ public class LeaderboardServiceTest {
 		assertThat(score.scope, equalTo(4));
 		assertThat(result.replacedScores, equalTo(-1));
 	}
-	
+
+	@Test
+	public void testCalculateCandidateScope1() {
+		assertThat(LeaderboardService.calculateCandidateScopeForWorseScore( //
+				score(1, 1, 1, 1),  //
+				score(2, 12, 12, 12)), // 
+				equalTo(Range.Month.scope));
+		
+		assertThat(LeaderboardService.calculateCandidateScopeForWorseScore( //
+				score(1, 1, 1, 1),  //
+				score(1, 1, 1, 2)), // 
+				equalTo(Range.Day.scope));
+		
+		assertThat(LeaderboardService.calculateCandidateScopeForWorseScore( //
+				score(1, 1, 1, 1),  //
+				score(1, 1, 2, 8)), // 
+				equalTo(Range.Week.scope));
+		
+		assertThat(LeaderboardService.calculateCandidateScopeForWorseScore( //
+				score(1, 1, 1, 1),  //
+				score(1, 2, 4, 32)), // 
+				equalTo(Range.Month.scope));
+	}
+
 }
