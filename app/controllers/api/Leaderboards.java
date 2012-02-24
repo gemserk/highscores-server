@@ -7,21 +7,27 @@ import models.Leaderboard;
 import models.Score;
 import models.User;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
 import org.joda.time.DateTime;
 
 import play.Play;
 import play.mvc.Controller;
+import play.mvc.With;
 import utils.Errors;
 import utils.Range;
+import controllers.filters.LogFilter;
 import controllers.services.LeaderboardService;
 import datatransfer.ErrorDTO;
 import datatransfer.ScoreDTO;
 
+@With(LogFilter.class)
 public class Leaderboards extends Controller {
 
+	static Logger logger = Logger.getLogger(Leaderboards.class);
 	
-
 	static public void score() {
+		MDC.put(LogFilter.USERCASE, "SUBMITSCORE");
 		String apiKey = params.get("apiKey");
 		Game game = Game.find("byApiKey", apiKey).first();
 		if (game == null)
@@ -55,7 +61,7 @@ public class Leaderboards extends Controller {
 			System.out.println("Overriding Date to " + overridendayofyear);
 			dateTime = dateTime.dayOfYear().setCopy(Integer.parseInt(overridendayofyear));
 		}
-
+		logger.info(String.format("Submitting scores - %s-%s(%d) - user(%d):%s  - score:%d",game.name, leaderboard.name, leaderboard.id,user.id, user.name, scoreValue));
 		LeaderboardService.submitScore(leaderboard, user, scoreValue, dateTime);
 		renderText("Score submitted succesfully");
 	}
@@ -64,8 +70,7 @@ public class Leaderboards extends Controller {
 	
 
 	public static void scores() {
-		
-		
+		MDC.put(LogFilter.USERCASE, "REQUESTSCORES");
 		String apiKey = params.get("apiKey");
 		Game game = Game.find("byApiKey", apiKey).first();
 		if (game == null)
@@ -105,7 +110,7 @@ public class Leaderboards extends Controller {
 		if(pageSizeParam!=null && pageSizeParam!="")
 			pageSize = Integer.parseInt(pageSizeParam);
 		
-		
+		logger.info(String.format("Requesting scores - %s-%s(%d) - range:%s - page:%d - pageSize:%d",game.name, leaderboard.name, leaderboard.id,range.toString(), page, pageSize));
 		List<Score> scores = LeaderboardService.getScores(leaderboard, range, dateTime, page, pageSize);
 
 		List<ScoreDTO> scoreDTOs = ScoreDTO.convert(scores);
@@ -113,6 +118,7 @@ public class Leaderboards extends Controller {
 	}
 	
 	private static void renderError(Errors error, String message){
+		logger.warn(error + " (" + error.errorCode + ") - " + message );
 		response.status = Errors.MAINERROR;
 		ErrorDTO errorDTO = new ErrorDTO(error.errorCode,message);
 		renderJSON(errorDTO);

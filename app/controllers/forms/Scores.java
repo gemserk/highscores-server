@@ -2,12 +2,16 @@ package controllers.forms;
 
 import java.util.List;
 
+import play.mvc.With;
+
 import models.Leaderboard;
 import models.User;
 import utils.Range;
 import controllers.CRUD;
 import controllers.admin.Leaderboards;
+import controllers.filters.LogFilter;
 
+@With(LogFilter.class)
 public class Scores extends CRUD{
 
 	static public void score(){
