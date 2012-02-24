@@ -7,19 +7,22 @@ import models.Leaderboard;
 import models.Score;
 import models.User;
 
+import org.apache.log4j.MDC;
 import org.joda.time.DateTime;
+import org.junit.Before;
 
 import play.Play;
 import play.mvc.Controller;
+import play.mvc.With;
 import utils.Errors;
 import utils.Range;
+import controllers.filters.LogFilter;
 import controllers.services.LeaderboardService;
 import datatransfer.ErrorDTO;
 import datatransfer.ScoreDTO;
 
+@With(LogFilter.class)
 public class Leaderboards extends Controller {
-
-	
 
 	static public void score() {
 		String apiKey = params.get("apiKey");
@@ -64,8 +67,6 @@ public class Leaderboards extends Controller {
 	
 
 	public static void scores() {
-		
-		
 		String apiKey = params.get("apiKey");
 		Game game = Game.find("byApiKey", apiKey).first();
 		if (game == null)

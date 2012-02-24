@@ -4,14 +4,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import controllers.filters.LogFilter;
+
 import datatransfer.ErrorDTO;
 import datatransfer.UserDTO;
 
 import models.User;
 import play.libs.Crypto;
 import play.mvc.Controller;
+import play.mvc.With;
 import utils.Errors;
 
+@With(LogFilter.class)
 public class Users extends Controller {
 
 	public static final String PLAYER_GUEST_PREFIX = "Player";
