@@ -9,10 +9,10 @@ GET     /                                       Application.index
 *      /admin              module:crud
 *	   /forms/score				forms.Scores.score
 *	   /forms/view					forms.Scores.view
-GET		/users/createGuest				api.Users.createGuest
-GET		/users/updateUser				api.Users.updateUser
-GET		/leaderboards/score				api.Leaderboards.score
-GET		/leaderboards/scores			api.Leaderboards.scores
+*		/users/createGuest				api.Users.createGuest
+*		/users/updateUser				api.Users.updateUser
+*		/leaderboards/score				api.Leaderboards.score
+*		/leaderboards/scores			api.Leaderboards.scores
 
 GET		/test/init						test.Test.init
 GET		/test/delete						test.Test.delete
