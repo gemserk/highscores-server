@@ -84,7 +84,7 @@ public class LeaderboardService {
 
 		for (int i = 0; i < scores.length; i++) {
 			Score oldScore = scores[i];
-			result.todayScoreExists = result.todayScoreExists || oldScore.day == score.day;
+			result.todayScoreExists = result.todayScoreExists || areSameDay(oldScore, score);
 			if (matchesInScope(oldScore, score)) {
 				if (score.score > oldScore.score) {
 					score.scope = oldScore.scope;
@@ -96,6 +96,10 @@ public class LeaderboardService {
 			}
 		}
 		return result;
+	}
+
+	public static boolean areSameDay(Score score1, Score score2) {
+		 return score1.day == score2.day && score1.year == score2.year;
 	}
 
 	static int calculateCandidateScopeForWorseScore(Score oldScore, Score score) {

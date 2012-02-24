@@ -95,7 +95,8 @@ public class LeaderboardServiceTest {
 
 	@Test
 	public void shouldBeBestOfTodayButNotYesterday() {
-		Score[] scores = new Score[] { score(1, 1, 1, 1, 1, 500), //
+		Score[] scores = new Score[] { 
+				score(1, 1, 1, 1, 1, 500), //
 				score(1, 1, 1, 2, 4, 450), //
 				score(1, 1, 1, 3, 4, 350), //
 				score(1, 1, 1, 4, 4, 250), //
@@ -204,4 +205,16 @@ public class LeaderboardServiceTest {
 				equalTo(Range.Month.scope));
 	}
 
+	@Test
+	public void testBestScoreFromAnotherYear() {
+		Score[] scores = new Score[] { 
+				score(1, 1, 1, 1, 1, 250) 
+		};
+		Score score = score(2, 1, 1, 1, 1, 500);
+		Result result = LeaderboardService.calculateScoreScopeAndStuff(score, scores);
+		assertThat(result.todayScoreExists, equalTo(false));
+		assertThat(score.scope, equalTo(1));
+		assertThat(result.replacedScores, equalTo(0));
+	}
+	
 }
