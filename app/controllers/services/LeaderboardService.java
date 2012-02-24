@@ -20,6 +20,13 @@ public class LeaderboardService {
 	private static final String scoresByWeek = "select s from Score s inner join fetch s.user where s.leaderboard = ? and s.scope <= ? and s.year = ? and s.week = ? order by s.score desc";
 	private static final String scoresByDay = "select s from Score s inner join fetch s.user where s.leaderboard = ? and s.scope <= ? and s.year = ? and s.day = ? order by s.score desc";
 	
+	static class Result {
+
+		int replacedScores = -1;
+		boolean todayScoreExists = false;
+
+	}
+	
 	public static void submitScore(Leaderboard leaderboard, User user, Long scoreValue, DateTime dateTime) {
 		int year = dateTime.getYear();
 		int month = dateTime.getMonthOfYear();
@@ -35,35 +42,19 @@ public class LeaderboardService {
 		score.month = month;
 		score.week = week;
 		score.day = day;
+		score.scope = 1;
 
 		List<Score> scoresList = Score.find("user = ? order by scope", user).fetch();
 		Score[] scores = scoresList.toArray(new Score[scoresList.size()]);
-		int candidateScope = 1;
 
-		int replacedScores = -1;
-		boolean todayScoreExists = false;
+		Result result = calculateScoreScopeAndStuff(score, scores);
 
-		for (int i = 0; i < scores.length; i++) {
-			Score oldScore = scores[i];
-			todayScoreExists = todayScoreExists || oldScore.day == day;
-			if (matchesInScope(oldScore, oldScore)) {
-				if (score.score > oldScore.score) {
-					score.scope = oldScore.scope;
-					replacedScores = i;
-					break;
-				} else {
-					candidateScope++;
-				}
-			}
-		}
+		if (result.replacedScores != -1)
+			deleteOldScores(scores, result.replacedScores);
 
-		if (replacedScores != -1)
-			deleteOldScores(scores, replacedScores);
-
-		if (replacedScores != -1 || todayScoreExists == false) {
-			score.scope = candidateScope;
+		if (result.replacedScores != -1 || result.todayScoreExists == false) 
 			score.save();
-		}
+		
 	}
 	
 	private static boolean matchesInScope(Score oldScore, Score score) {
@@ -87,8 +78,26 @@ public class LeaderboardService {
 			scores[i].delete();
 		}
 	}
-	
-	
+
+	static Result calculateScoreScopeAndStuff(Score score, Score[] scores) {
+		Result result = new Result();
+
+		for (int i = 0; i < scores.length; i++) {
+			Score oldScore = scores[i];
+			result.todayScoreExists = result.todayScoreExists || oldScore.day == score.day;
+			if (matchesInScope(oldScore, score)) {
+				if (score.score > oldScore.score) {
+					score.scope = oldScore.scope;
+					result.replacedScores = i;
+					break;
+				} else {
+					score.scope++;
+				}
+			}
+		}
+		return result;
+	}
+
 	public static List<Score> getScores(Leaderboard leaderboard, Range range, DateTime dateTime, int page, int pageSize) {
 		int scope = range.scope;
 		int year = dateTime.getYear();
