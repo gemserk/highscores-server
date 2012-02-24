@@ -2,23 +2,24 @@ package controllers.test;
 
 import java.util.Random;
 
-import org.joda.time.DateTime;
-
-import controllers.services.LeaderboardService;
 import models.Game;
 import models.Leaderboard;
 import models.User;
+
+import org.joda.time.DateTime;
+
 import play.Play;
 import play.mvc.Before;
 import play.mvc.Controller;
 import play.test.Fixtures;
+import controllers.services.LeaderboardService;
 
 public class Test extends Controller {
 
 	@Before
 	static void onlyRunInTest() {
-//		if (!Play.runingInTestMode())
-//			error(403, "Only available in test mode");
+		if (!Play.runingInTestMode())
+			error(403, "Only available in test mode");
 	}
 
 	static public void init() {
