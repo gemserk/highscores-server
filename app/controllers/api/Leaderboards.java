@@ -65,7 +65,6 @@ public class Leaderboards extends Controller {
 
 	public static void scores() {
 		
-		System.out.println(params.allSimple());
 		
 		String apiKey = params.get("apiKey");
 		Game game = Game.find("byApiKey", apiKey).first();
