@@ -12,8 +12,9 @@ import play.mvc.Controller;
 
 public class LogFilter extends Controller{
 
-	private static final String REQUEST_ID_MDC = "requestId";
-	private static final String ADDRESS_MDC = "address";
+	public static final String REQUEST_ID_MDC = "requestId";
+	public static final String ADDRESS_MDC = "address";
+	public static final String USERCASE = "usecase";
 
 	static AtomicLong atomicLong = new AtomicLong(System.currentTimeMillis());
 	
