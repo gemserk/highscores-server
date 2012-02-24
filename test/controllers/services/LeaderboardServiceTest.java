@@ -64,7 +64,7 @@ public class LeaderboardServiceTest {
 		for (int i = 0; i < scores.length; i++) {
 			Score oldScore = scores[i];
 			result.todayScoreExists = result.todayScoreExists || oldScore.day == score.day;
-			if (matchesInScope(oldScore, oldScore)) {
+			if (matchesInScope(oldScore, score)) {
 				if (score.score > oldScore.score) {
 					score.scope = oldScore.scope;
 					result.replacedScores = i;
@@ -161,5 +161,54 @@ public class LeaderboardServiceTest {
 		assertThat(result.candidateScope, IsEqual.equalTo(4));
 		assertThat(result.replacedScores, IsEqual.equalTo(-1));
 	}
+	
+	@Test
+	public void testCase01() {
+		Score[] scores = new Score[] { //
+				score(1, 1, 1, 1, 1, 500), //
+		};
+		Score score = score(1, 1, 1, 2, -100, 400);
+		Result result = calculateScoreScopeAndStuff(score, scores);
+		assertThat(result.todayScoreExists, IsEqual.equalTo(false));
+		assertThat(result.candidateScope, IsEqual.equalTo(4));
+		assertThat(result.replacedScores, IsEqual.equalTo(-1));
+	}
+	
+	@Test
+	public void testCase02() {
+		Score[] scores = new Score[] { //
+				score(1, 1, 1, 1, 1, 500), //
+				score(1, 1, 2, 8, 3, 400), //
+		};
+		Score score = score(1, 1, 2, 8, -100, 450);
+		Result result = calculateScoreScopeAndStuff(score, scores);
+		assertThat(result.todayScoreExists, IsEqual.equalTo(true));
+		assertThat(result.candidateScope, IsEqual.equalTo(3));
+		assertThat(result.replacedScores, IsEqual.equalTo(1));
+	}
 
+	@Test
+	public void testCaseSameWeekSameDayLessScore() {
+		Score[] scores = new Score[] { //
+				score(1, 1, 1, 1, 1, 500), //
+				score(1, 1, 2, 8, 3, 400), //
+		};
+		Score score = score(1, 1, 2, 8, -100, 350);
+		Result result = calculateScoreScopeAndStuff(score, scores);
+		assertThat(result.todayScoreExists, IsEqual.equalTo(true));
+		assertThat(result.replacedScores, IsEqual.equalTo(-1));
+	}
+	
+	@Test
+	public void testCaseSameWeekDifferentDayLessScore() {
+		Score[] scores = new Score[] { //
+				score(1, 1, 1, 1, 1, 500), //
+				score(1, 1, 2, 8, 3, 400), //
+		};
+		Score score = score(1, 1, 2, 9, -100, 350);
+		Result result = calculateScoreScopeAndStuff(score, scores);
+		assertThat(result.todayScoreExists, IsEqual.equalTo(false));
+		assertThat(result.candidateScope, IsEqual.equalTo(4));
+		assertThat(result.replacedScores, IsEqual.equalTo(-1));
+	}
 }
