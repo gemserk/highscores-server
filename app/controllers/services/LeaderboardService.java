@@ -64,13 +64,12 @@ public class LeaderboardService {
 		case 2:
 			return (score.year == oldScore.year && score.month == oldScore.month);
 		case 3:
-			return (score.year == oldScore.year && score.month == oldScore.month && score.week == oldScore.week);
+			return (score.year == oldScore.year && score.week == oldScore.week);
 		case 4:
-			return (score.year == oldScore.year && score.month == oldScore.month && score.week == oldScore.week && score.day == oldScore.day);
+			return (score.year == oldScore.year && score.day == oldScore.day);
 		default:
 			return false;
 		}
-
 	}
 
 	static private void deleteOldScores(Score[] scores, int from) {
